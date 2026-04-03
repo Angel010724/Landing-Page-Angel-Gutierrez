@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect, useMemo } from 'react';
-import { Menu, X, Download, ArrowRight, ExternalLink } from 'lucide-react';
+import { Menu, X, Download, ExternalLink } from 'lucide-react';
 import Image from 'next/image';
 import {
   SiJavascript, SiTypescript, SiPython, SiPhp,
@@ -126,9 +126,9 @@ const Portfolio = () => {
 
   const t = content[language];
 
-  const typingWords = language === 'ES'
+  const typingWords = useMemo(() => language === 'ES'
     ? ['Desarrollador Fullstack', 'Licenciado en Software', 'Diseñador Web']
-    : ['Fullstack Developer', 'Software Graduate', 'Web Designer'];
+    : ['Fullstack Developer', 'Software Graduate', 'Web Designer'], [language]);
 
   useEffect(() => {
     const word = typingWords[currentWordIndex];
