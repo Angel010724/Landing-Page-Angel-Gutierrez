@@ -1,818 +1,413 @@
 "use client";
-import React, { useState, useEffect } from 'react';
-import { Menu, X, Download, Github, Linkedin, Mail, Phone, Globe, Code, Database, Layers, Smartphone, Zap, Star, ArrowRight } from 'lucide-react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { Menu, X, Download, ArrowRight, ExternalLink } from 'lucide-react';
+import Image from 'next/image';
+import {
+  SiJavascript, SiTypescript, SiPython, SiPhp,
+  SiLaravel, SiReact, SiNodedotjs, SiFastapi, SiNextdotjs, SiDjango,
+  SiMysql, SiPostgresql, SiMongodb,
+  SiGit, SiFigma, SiPostman, SiVercel
+} from 'react-icons/si';
+import { VscVscode } from 'react-icons/vsc';
+import { FaLinkedinIn, FaGithub, FaWhatsapp, FaEnvelope } from 'react-icons/fa';
 
-interface ContentType {
-    ES: {
-        nav: {
-            inicio: string;
-            sobre: string;
-            habilidades: string;
-            servicios: string;
-            contacto: string;
-        };
-        hero: {
-            greeting: string;
-            name: string;
-            description: string;
-            cta2: string;
-        };
-        about: {
-            title: string;
-            description: string;
-        };
-        skills: {
-            title: string;
-            languages: string;
-            frameworks: string;
-            databases: string;
-        };
-        services: {
-            title: string;
-            items: string[];
-        };
-        contact: {
-            title: string;
-            subtitle: string;
-            name: string;
-            email: string;
-            message: string;
-            send: string;
-        };
-        footer: {
-            rights: string;
-        };
-    };
-    EN: {
-        nav: {
-            inicio: string;
-            sobre: string;
-            habilidades: string;
-            servicios: string;
-            contacto: string;
-        };
-        hero: {
-            greeting: string;
-            name: string;
-            description: string;
-            cta2: string;
-        };
-        about: {
-            title: string;
-            description: string;
-        };
-        skills: {
-            title: string;
-            languages: string;
-            frameworks: string;
-            databases: string;
-        };
-        services: {
-            title: string;
-            items: string[];
-        };
-        contact: {
-            title: string;
-            subtitle: string;
-            name: string;
-            email: string;
-            message: string;
-            send: string;
-        };
-        footer: {
-            rights: string;
-        };
-    };
-}
+type Lang = 'ES' | 'EN';
+
+const techStack = [
+  { name: 'JavaScript', icon: SiJavascript, color: '#F7DF1E', level: 5, category: 'lenguajes' },
+  { name: 'TypeScript', icon: SiTypescript, color: '#3178C6', level: 4, category: 'lenguajes' },
+  { name: 'Python', icon: SiPython, color: '#3776AB', level: 4, category: 'lenguajes' },
+  { name: 'PHP', icon: SiPhp, color: '#777BB4', level: 3, category: 'lenguajes' },
+  { name: 'Laravel', icon: SiLaravel, color: '#FF2D20', level: 4, category: 'frameworks' },
+  { name: 'React', icon: SiReact, color: '#61DAFB', level: 5, category: 'frameworks' },
+  { name: 'FastAPI', icon: SiFastapi, color: '#009688', level: 4, category: 'frameworks' },
+  { name: 'Next.js', icon: SiNextdotjs, color: '#ffffff', level: 5, category: 'frameworks' },
+  { name: 'Django', icon: SiDjango, color: '#092E20', level: 4, category: 'frameworks' },
+  { name: 'Node.js', icon: SiNodedotjs, color: '#339933', level: 4, category: 'frameworks' },
+  { name: 'MySQL', icon: SiMysql, color: '#4479A1', level: 4, category: 'bases' },
+  { name: 'PostgreSQL', icon: SiPostgresql, color: '#4169E1', level: 4, category: 'bases' },
+  { name: 'MongoDB', icon: SiMongodb, color: '#47A248', level: 3, category: 'bases' },
+  { name: 'Git', icon: SiGit, color: '#F05032', level: 5, category: 'herramientas' },
+  { name: 'VS Code', icon: VscVscode, color: '#007ACC', level: 5, category: 'herramientas' },
+  { name: 'Figma', icon: SiFigma, color: '#F24E1E', level: 3, category: 'herramientas' },
+  { name: 'Postman', icon: SiPostman, color: '#FF6C37', level: 4, category: 'herramientas' },
+  { name: 'Vercel', icon: SiVercel, color: '#ffffff', level: 4, category: 'herramientas' },
+];
+
+const filterCategories = [
+  { key: 'todas', label: 'Todas' },
+  { key: 'lenguajes', label: 'Lenguajes' },
+  { key: 'frameworks', label: 'Frameworks' },
+  { key: 'bases', label: 'Bases de datos' },
+  { key: 'herramientas', label: 'Herramientas' },
+];
+
+const nexoTechnologies = [
+  { name: 'Next.js', color: 'bg-white/10 text-white' },
+  { name: 'TypeScript', color: 'bg-blue-500/10 text-blue-400' },
+  { name: 'Tailwind', color: 'bg-cyan-500/10 text-cyan-400' },
+  { name: 'Prisma', color: 'bg-indigo-500/10 text-indigo-400' },
+  { name: 'PostgreSQL', color: 'bg-blue-600/10 text-blue-300' },
+  { name: 'Gemini AI', color: 'bg-purple-500/10 text-purple-400' },
+];
+
+const socialLinks = [
+  { name: 'Email', icon: FaEnvelope, href: 'mailto:xavier.gutierrez1606@gmail.com', color: '#EA4335', hoverBg: 'hover:bg-red-500/10 hover:border-red-500/50' },
+  { name: 'LinkedIn', icon: FaLinkedinIn, href: 'https://www.linkedin.com/in/angel-guti%C3%A9rrez-b65922202', color: '#0A66C2', hoverBg: 'hover:bg-blue-500/10 hover:border-blue-500/50' },
+  { name: 'GitHub', icon: FaGithub, href: 'https://share.google/bWqbxn6FT45ktsKPs', color: '#ffffff', hoverBg: 'hover:bg-white/10 hover:border-white/50' },
+  { name: 'WhatsApp', icon: FaWhatsapp, href: 'https://wa.me/50764086483', color: '#25D366', hoverBg: 'hover:bg-green-500/10 hover:border-green-500/50' },
+];
+
+const content = {
+  ES: {
+    nav: [
+      { key: 'inicio', label: 'Inicio' },
+      { key: 'proyectos', label: 'Proyectos' },
+      { key: 'habilidades', label: 'Habilidades' },
+      { key: 'contacto', label: 'Contacto' },
+    ],
+    hero: {
+      badge: 'Disponible para proyectos',
+      name: 'Angel Gutiérrez',
+      prefix: 'Soy ',
+      description: 'Creo aplicaciones web modernas, escalables y eficientes, combinando experiencia en frontend, backend y bases de datos.',
+      downloadCV: 'Descargar CV',
+      contact: 'Contactar',
+    },
+    stats: [
+      { value: '1', label: 'Proyecto realizado' },
+      { value: '2+', label: 'Años de experiencia' },
+      { value: '100%', label: 'Compromiso' },
+    ],
+    projects: { subtitle: 'PORTAFOLIO', title: 'Proyectos', highlight: 'realizados', desc: 'Algunos de mis trabajos más recientes' },
+    skills: { subtitle: 'STACK TÉCNICO', title: 'Habilidades', highlight: 'técnicas', desc: 'Tecnologías con las que trabajo a diario' },
+    contact: { subtitle: 'HABLEMOS', title: '¿Tienes un proyecto en mente?', desc: 'Estoy disponible para freelance y oportunidades laborales. ¡Contáctame!' },
+    nexoDesc: 'Plataforma de gestión financiera personal con IA integrada. Organiza ingresos, gastos y metas de ahorro con inteligencia artificial que te guía hacia mejores decisiones financieras.',
+    viewProject: 'Ver proyecto',
+    footer: '© 2026 Angel Gutiérrez. Todos los derechos reservados.',
+  },
+  EN: {
+    nav: [
+      { key: 'inicio', label: 'Home' },
+      { key: 'proyectos', label: 'Projects' },
+      { key: 'habilidades', label: 'Skills' },
+      { key: 'contacto', label: 'Contact' },
+    ],
+    hero: {
+      badge: 'Available for projects',
+      name: 'Angel Gutiérrez',
+      prefix: "I'm ",
+      description: 'I create modern, scalable and efficient web applications, combining experience in frontend, backend and databases.',
+      downloadCV: 'Download CV',
+      contact: 'Contact',
+    },
+    stats: [
+      { value: '1', label: 'Project completed' },
+      { value: '2+', label: 'Years of experience' },
+      { value: '100%', label: 'Commitment' },
+    ],
+    projects: { subtitle: 'PORTFOLIO', title: 'Completed', highlight: 'projects', desc: 'Some of my most recent work' },
+    skills: { subtitle: 'TECH STACK', title: 'Technical', highlight: 'skills', desc: 'Technologies I work with daily' },
+    contact: { subtitle: "LET'S TALK", title: 'Have a project in mind?', desc: "I'm available for freelance and job opportunities. Contact me!" },
+    nexoDesc: 'Personal financial management platform with integrated AI. Organize income, expenses and savings goals with artificial intelligence that guides you towards better financial decisions.',
+    viewProject: 'View project',
+    footer: '© 2026 Angel Gutiérrez. All rights reserved.',
+  },
+};
 
 const Portfolio = () => {
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const [language, setLanguage] = useState<'ES' | 'EN'>('ES');
-    const [activeSection, setActiveSection] = useState('inicio');
-    const [currentWordIndex, setCurrentWordIndex] = useState(0);
-    const [currentText, setCurrentText] = useState('');
-    const [isDeleting, setIsDeleting] = useState(false);
-    
-    const [formData, setFormData] = useState({
-        name: '',
-        email: '',
-        message: ''
-    });
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [submitStatus, setSubmitStatus] = useState('');
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [language, setLanguage] = useState<Lang>('ES');
+  const [activeSection, setActiveSection] = useState('inicio');
+  const [activeFilter, setActiveFilter] = useState('todas');
+  const [currentWordIndex, setCurrentWordIndex] = useState(0);
+  const [currentText, setCurrentText] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: value
-        }));
-    };
+  const t = content[language];
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setIsSubmitting(true);
-        setSubmitStatus('');
+  const typingWords = language === 'ES'
+    ? ['Desarrollador Fullstack', 'Licenciado en Software', 'Diseñador Web']
+    : ['Fullstack Developer', 'Software Graduate', 'Web Designer'];
 
-        try {
-            const subject = `Contacto desde Portfolio - ${formData.name}`;
-            const body = `
-Nombre: ${formData.name}
-Email: ${formData.email}
-
-Mensaje:
-${formData.message}
-
----
-Enviado desde el portfolio de Ángel Gutiérrez
-            `;
-
-            const mailtoLink = `mailto:xavier.gutierrez1606@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-            
-            window.location.href = mailtoLink;
-            
-            setFormData({ name: '', email: '', message: '' });
-            setSubmitStatus('success');
-            
-        } catch (error) {
-            setSubmitStatus('error');
-        } finally {
-            setIsSubmitting(false);
+  useEffect(() => {
+    const word = typingWords[currentWordIndex];
+    const timeout = setTimeout(() => {
+      if (!isDeleting) {
+        if (currentText.length < word.length) {
+          setCurrentText(word.substring(0, currentText.length + 1));
+        } else {
+          setTimeout(() => setIsDeleting(true), 2000);
         }
-    };
-
-    const content: ContentType = {
-        ES: {
-            nav: {
-                inicio: 'Inicio',
-                sobre: 'Sobre mí',
-                habilidades: 'Habilidades',
-                servicios: 'Servicios',
-                contacto: 'Contacto'
-            },
-            hero: {
-                greeting: 'Hola, soy',
-                name: 'Angel Gutiérrez',
-                description: 'Creo aplicaciones web modernas, escalables y eficientes, combinando experiencia en frontend, backend y bases de datos.',
-                cta2: 'Descargar CV'
-            },
-            about: {
-                title: 'Sobre mí',
-                description: 'Soy licenciado en Desarrollo de Software. Tengo experiencia en proyectos personales y freelance, trabajando principalmente con JavaScript, PHP y Python, aplicando frameworks modernos como Laravel, Next.js y React. Me apasiona crear soluciones digitales prácticas que ayuden a las personas y empresas a crecer.'
-            },
-            skills: {
-                title: 'Habilidades técnicas',
-                languages: 'Lenguajes',
-                frameworks: 'Frameworks & Librerías',
-                databases: 'Bases de datos'
-            },
-            services: {
-                title: 'Servicios',
-                items: [
-                    'Desarrollo de aplicaciones web a medida',
-                    'Creación de APIs y servicios backend escalables',
-                    'Integración de bases de datos SQL y NoSQL',
-                    'Diseño y desarrollo de interfaces con React/Next.js',
-                    'Mantenimiento y optimización de aplicaciones existentes',
-                    'Consultoría técnica y optimización de rendimiento'
-                ]
-            },
-            contact: {
-                title: 'Contacto',
-                subtitle: '¿Listo para trabajar juntos?',
-                name: 'Nombre',
-                email: 'Correo electrónico',
-                message: 'Mensaje',
-                send: 'Enviar mensaje'
-            },
-            footer: {
-                rights: '© 2025 Angel Gutiérrez – Desarrollador Fullstack'
-            }
-        },
-        EN: {
-            nav: {
-                inicio: 'Home',
-                sobre: 'About',
-                habilidades: 'Skills',
-                servicios: 'Services',
-                contacto: 'Contact'
-            },
-            hero: {
-                greeting: 'Hi, I\'m',
-                name: 'Angel Gutiérrez',
-                description: 'I create modern, scalable and efficient web applications, combining experience in frontend, backend and databases.',
-                cta2: 'Download CV'
-            },
-            about: {
-                title: 'About me',
-                description: 'I have a degree in Software Development. I have experience in personal and freelance projects, working mainly with JavaScript, PHP and Python, applying modern frameworks like Laravel, Next.js and React. I\'m passionate about creating practical digital solutions that help people and businesses grow.'
-            },
-            skills: {
-                title: 'Technical skills',
-                languages: 'Languages',
-                frameworks: 'Frameworks & Libraries',
-                databases: 'Databases'
-            },
-            services: {
-                title: 'Services',
-                items: [
-                    'Custom web application development',
-                    'Scalable backend APIs and services creation',
-                    'SQL and NoSQL database integration',
-                    'Interface design and development with React/Next.js',
-                    'Maintenance and optimization of existing applications',
-                    'Technical consulting and performance optimization'
-                ]
-            },
-            contact: {
-                title: 'Contact',
-                subtitle: 'Ready to work together?',
-                name: 'Name',
-                email: 'Email',
-                message: 'Message',
-                send: 'Send message'
-            },
-            footer: {
-                rights: '© 2025 Ángel Gutiérrez – Fullstack Developer'
-            }
+      } else {
+        if (currentText.length > 0) {
+          setCurrentText(word.substring(0, currentText.length - 1));
+        } else {
+          setIsDeleting(false);
+          setCurrentWordIndex((prev) => (prev + 1) % typingWords.length);
         }
-    };
+      }
+    }, isDeleting ? 80 : 120);
+    return () => clearTimeout(timeout);
+  }, [currentText, isDeleting, currentWordIndex, typingWords]);
 
-    const t = content[language];
+  const filteredTech = useMemo(() => {
+    if (activeFilter === 'todas') return techStack;
+    return techStack.filter(item => item.category === activeFilter);
+  }, [activeFilter]);
 
-    // Typing animation words
-    const typingWords = language === 'ES'
-        ? ['Licenciado', 'Desarrollador', 'Diseñador Web']
-        : ['Graduate', 'Developer', 'Web Designer'];
-
-    // Typing animation effect
-    useEffect(() => {
-        const word = typingWords[currentWordIndex];
-
-        const timeout = setTimeout(() => {
-            if (!isDeleting) {
-                if (currentText.length < word.length) {
-                    setCurrentText(word.substring(0, currentText.length + 1));
-                } else {
-                    setTimeout(() => setIsDeleting(true), 2000);
-                }
-            } else {
-                if (currentText.length > 0) {
-                    setCurrentText(word.substring(0, currentText.length - 1));
-                } else {
-                    setIsDeleting(false);
-                    setCurrentWordIndex((prev) => (prev + 1) % typingWords.length);
-                }
-            }
-        }, isDeleting ? 100 : 150);
-
-        return () => clearTimeout(timeout);
-    }, [currentText, isDeleting, currentWordIndex, typingWords]);
-
-    const skillsData = [
-        {
-            category: t.skills.languages, items: [
-                { name: 'JavaScript', level: 90, color: 'bg-gradient-to-r from-orange-400 to-orange-600' },
-                { name: 'PHP', level: 70, color: 'bg-gradient-to-r from-emerald-400 to-emerald-600' },
-                { name: 'Python', level:80 , color: 'bg-gradient-to-r from-blue-400 to-blue-600' },
-                { name: 'TypeScript', level: 80, color: 'bg-gradient-to-r from-amber-400 to-amber-600' },
-            ]
-        },
-        {
-            category: t.skills.frameworks, items: [
-                { name: 'Laravel', level: 80, color: 'bg-gradient-to-r from-red-400 to-red-600' },
-                { name: 'Next.js', level: 85, color: 'bg-gradient-to-r from-gray-600 to-gray-800' },
-                { name: 'React', level: 80, color: 'bg-gradient-to-r from-cyan-400 to-cyan-600' },
-                { name: 'Django', level: 80, color: 'bg-gradient-to-r from-emeral-300 to-green-500' }
-            ]
-        },
-        {
-            category: t.skills.databases, items: [
-                { name: 'PostgreSQL', level: 90, color: 'bg-gradient-to-r from-indigo-400 to-indigo-600' },
-                { name: 'MongoDB', level: 70, color: 'bg-gradient-to-r from-green-400 to-green-600' }
-            ]
+  useEffect(() => {
+    const handleScroll = () => {
+      const sections = ['inicio', 'proyectos', 'habilidades', 'contacto'];
+      const scrollPos = window.scrollY + 100;
+      for (const id of sections) {
+        const el = document.getElementById(id);
+        if (el && scrollPos >= el.offsetTop && scrollPos < el.offsetTop + el.offsetHeight) {
+          setActiveSection(id);
+          break;
         }
-    ];
-
-    const services = [
-        { 
-            icon: <Code className="w-8 h-8" />, 
-            title: t.services.items[0],
-            gradient: 'from-orange-500 to-red-500',
-            shadowColor: 'shadow-orange-500/25'
-        },
-        { 
-            icon: <Database className="w-8 h-8" />, 
-            title: t.services.items[1],
-            gradient: 'from-emerald-500 to-teal-500',
-            shadowColor: 'shadow-emerald-500/25'
-        },
-        { 
-            icon: <Layers className="w-8 h-8" />, 
-            title: t.services.items[2],
-            gradient: 'from-blue-500 to-indigo-500',
-            shadowColor: 'shadow-blue-500/25'
-        },
-        { 
-            icon: <Smartphone className="w-8 h-8" />, 
-            title: t.services.items[3],
-            gradient: 'from-purple-500 to-pink-500',
-            shadowColor: 'shadow-purple-500/25'
-        },
-        { 
-            icon: <Globe className="w-8 h-8" />, 
-            title: t.services.items[4],
-            gradient: 'from-amber-500 to-orange-500',
-            shadowColor: 'shadow-amber-500/25'
-        },
-        { 
-            icon: <Zap className="w-8 h-8" />, 
-            title: t.services.items[5],
-            gradient: 'from-cyan-500 to-blue-500',
-            shadowColor: 'shadow-cyan-500/25'
-        }
-    ];
-
-    useEffect(() => {
-        const handleScroll = () => {
-            const sections = ['inicio', 'sobre', 'habilidades', 'servicios', 'contacto'];
-            const scrollPosition = window.scrollY + 100;
-
-            for (const section of sections) {
-                const element = document.getElementById(section);
-                if (element) {
-                    const offsetTop = element.offsetTop;
-                    const offsetBottom = offsetTop + element.offsetHeight;
-
-                    if (scrollPosition >= offsetTop && scrollPosition < offsetBottom) {
-                        setActiveSection(section);
-                        break;
-                    }
-                }
-            }
-        };
-
-        window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
-
-    const scrollToSection = (sectionId: string) => {
-        const element = document.getElementById(sectionId);
-        if (element) {
-            element.scrollIntoView({ behavior: 'smooth' });
-        }
-        setIsMenuOpen(false);
+      }
     };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
-    const downloadCV = () => {
-        // Descargar PDF desde la carpeta public
-        const link = document.createElement('a');
-        link.href = '/AngelGutiérrezHoja deVida2025.pdf';
-        link.download = 'Angel_Gutierrez_CV_2025.pdf';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    };
+  const scrollTo = (id: string) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+    setIsMenuOpen(false);
+  };
 
-    return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-900 via-orange-900/20 to-slate-900">
-            {/* Animated background particles */}
-            <div className="fixed inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute -top-40 -right-40 w-80 h-80 bg-orange-500/10 rounded-full blur-3xl animate-pulse"></div>
-                <div className="absolute top-40 -left-40 w-80 h-80 bg-amber-500/10 rounded-full blur-3xl animate-pulse animation-delay-2000"></div>
-                <div className="absolute bottom-40 right-40 w-80 h-80 bg-red-500/10 rounded-full blur-3xl animate-pulse animation-delay-4000"></div>
+  const downloadCV = () => {
+    const link = document.createElement('a');
+    link.href = '/AngelGutiérrezHoja deVida2025.pdf';
+    link.download = 'Angel_Gutierrez_CV_2025.pdf';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  return (
+    <div className="min-h-screen bg-[#0a0f1a] text-white">
+      {/* Ambient background */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
+        <div className="absolute -top-40 -right-40 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute top-1/3 -left-40 w-96 h-96 bg-teal-500/5 rounded-full blur-3xl animate-pulse animation-delay-2000" />
+        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-blue-500/5 rounded-full blur-3xl animate-pulse animation-delay-4000" />
+      </div>
+
+      {/* ── Header ── */}
+      <header className="fixed top-0 left-0 right-0 z-50 bg-[#0a0f1a]/80 backdrop-blur-xl border-b border-cyan-500/10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center py-4">
+            <div className="flex items-center space-x-3">
+              <Image src="/ag-logo.png" alt="AG Logo" width={40} height={40} className="rounded-lg shadow-lg shadow-cyan-500/20" />
+              <div className="hidden sm:block">
+                <span className="font-semibold text-lg block leading-tight">Angel Gutiérrez</span>
+                <span className="text-xs text-cyan-400/80">
+                  {currentText}<span className="animate-pulse">|</span>
+                </span>
+              </div>
             </div>
 
-            {/* Header */}
-            <header className="fixed top-0 left-0 right-0 z-50 bg-slate-900/80 backdrop-blur-xl border-b border-orange-500/20 shadow-lg shadow-orange-500/10">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex justify-between items-center py-4">
-                        <div className="flex items-center space-x-3">
-                            <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl flex items-center justify-center shadow-lg shadow-orange-500/25">
-                                <span className="text-white font-bold text-lg">AG</span>
-                            </div>
-                            <div>
-                                <h1 className="text-xl font-bold bg-gradient-to-r from-orange-400 to-red-400 bg-clip-text text-transparent">{t.hero.name}</h1>
-                                <p className="text-sm text-orange-300/80">
-                                    {currentText}
-                                    <span className="animate-pulse text-orange-400">|</span>
-                                </p>
-                            </div>
-                        </div>
+            <nav className="hidden md:flex items-center space-x-8">
+              {t.nav.map(item => (
+                <button key={item.key} onClick={() => scrollTo(item.key)}
+                  className={`relative text-sm font-medium transition-all duration-300 group ${activeSection === item.key ? 'text-cyan-400' : 'text-gray-300 hover:text-white'}`}>
+                  {item.label}
+                  <span className={`absolute -bottom-1 left-0 right-0 h-0.5 rounded-full bg-gradient-to-r from-cyan-400 to-teal-400 transition-opacity duration-300 ${activeSection === item.key ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`} />
+                </button>
+              ))}
+              <button onClick={() => setLanguage(language === 'ES' ? 'EN' : 'ES')}
+                className="px-3 py-1.5 text-xs font-medium border border-cyan-500/30 text-cyan-400 rounded-lg hover:bg-cyan-500/10 transition-all">
+                {language === 'ES' ? 'EN' : 'ES'}
+              </button>
+            </nav>
 
-                        {/* Desktop Navigation */}
-                        <nav className="hidden md:flex items-center space-x-8">
-                            {Object.entries(t.nav).map(([key, value]) => (
-                                <button
-                                    key={key}
-                                    onClick={() => scrollToSection(key)}
-                                    className={`relative text-sm font-medium transition-all duration-300 hover:text-orange-300 ${
-                                        activeSection === key 
-                                            ? 'text-orange-300' 
-                                            : 'text-white'
-                                    } group`}
-                                >
-                                    {value as string}
-                                    {activeSection === key && (
-                                        <div className="absolute -bottom-1 left-0 right-0 h-0.5 bg-gradient-to-r from-orange-400 to-red-400 rounded-full"></div>
-                                    )}
-                                    <div className="absolute -bottom-1 left-0 right-0 h-0.5 bg-gradient-to-r from-orange-400 to-red-400 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                                </button>
-                            ))}
-                            <button
-                                onClick={() => setLanguage(language === 'ES' ? 'EN' : 'ES')}
-                                className="px-4 py-2 text-sm bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white rounded-lg transition-all duration-300 shadow-lg shadow-orange-500/25 transform hover:scale-105"
-                            >
-                                {language}
-                            </button>
-                        </nav>
+            <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="md:hidden text-gray-300 hover:text-white transition-colors">
+              {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
 
-                        {/* Mobile menu button */}
-                        <button
-                            onClick={() => setIsMenuOpen(!isMenuOpen)}
-                            className="md:hidden text-white hover:text-orange-300 transition-colors"
-                        >
-                            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-                        </button>
-                    </div>
-
-                    {/* Mobile Navigation */}
-                    {isMenuOpen && (
-                        <div className="md:hidden py-4 border-t border-orange-500/20">
-                            <nav className="flex flex-col space-y-4">
-                                {Object.entries(t.nav).map(([key, value]) => (
-                                    <button
-                                        key={key}
-                                        onClick={() => scrollToSection(key)}
-                                        className={`text-left text-sm font-medium transition-colors hover:text-orange-300 ${
-                                            activeSection === key ? 'text-orange-300' : 'text-white'
-                                        }`}
-                                    >
-                                        {value as string}
-                                    </button>
-                                ))}
-                                <button
-                                    onClick={() => setLanguage(language === 'ES' ? 'EN' : 'ES')}
-                                    className="text-left px-3 py-1 text-sm bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white rounded-lg transition-colors w-fit"
-                                >
-                                    {language}
-                                </button>
-                            </nav>
-                        </div>
-                    )}
-                </div>
-            </header>
-
-            {/* Hero Section */}
-            <section id="inicio" className="pt-32 pb-20 px-4 sm:px-6 lg:px-8 relative">
-                <div className="max-w-7xl mx-auto text-center">
-                    <div className="mb-8">
-                        <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-orange-500/10 to-red-500/10 border border-orange-500/20 rounded-full mb-6 backdrop-blur-sm">
-                            <Star className="w-4 h-4 text-orange-400 mr-2" />
-                            <span className="text-orange-300 text-sm font-medium">{t.hero.greeting}</span>
-                        </div>
-                        
-                        <h2 className="text-5xl sm:text-7xl font-bold bg-gradient-to-r from-white via-orange-100 to-orange-200 bg-clip-text text-transparent mb-4">
-                            {t.hero.name}
-                        </h2>
-                        
-                        <div className="text-2xl sm:text-3xl font-light text-orange-100 mb-6">
-                            <span className="text-orange-300">Soy </span>
-                            <span className="bg-gradient-to-r from-orange-400 to-red-400 bg-clip-text text-transparent font-semibold">
-                                {currentText}
-                                <span className="animate-pulse text-orange-400">|</span>
-                            </span>
-                        </div>
-                        
-                        <p className="text-xl text-gray-300 max-w-4xl mx-auto leading-relaxed mb-8">
-                            {t.hero.description}
-                        </p>
-                    </div>
-
-                    <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                        <button 
-                            onClick={downloadCV}
-                            className="group px-8 py-4 bg-gradient-to-r from-orange-500 to-red-500 text-white font-semibold rounded-xl hover:from-orange-600 hover:to-red-600 transition-all duration-300 flex items-center space-x-2 shadow-lg shadow-orange-500/25 transform hover:scale-105"
-                        >
-                            <Download size={20} className="group-hover:animate-bounce" />
-                            <span>{t.hero.cta2}</span>
-                            <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
-                        </button>
-                        <button 
-                            onClick={() => scrollToSection('contacto')}
-                            className="px-8 py-4 border-2 border-orange-400/50 text-orange-300 font-semibold rounded-xl hover:bg-orange-400/10 hover:border-orange-400 transition-all duration-300 backdrop-blur-sm"
-                        >
-                            Contactar
-                        </button>
-                    </div>
-                </div>
-            </section>
-
-            {/* About Section */}
-            <section id="sobre" className="py-20 px-4 sm:px-6 lg:px-8 bg-black/20 backdrop-blur-sm">
-                <div className="max-w-4xl mx-auto">
-                    <h3 className="text-4xl font-bold bg-gradient-to-r from-orange-400 to-red-400 bg-clip-text text-transparent text-center mb-12">
-                        {t.about.title}
-                    </h3>
-                    <div className="bg-gradient-to-r from-slate-800/50 to-slate-700/50 backdrop-blur-sm rounded-2xl p-8 border border-orange-500/20 shadow-xl shadow-orange-500/10">
-                        <p className="text-lg text-gray-300 leading-relaxed">
-                            {t.about.description}
-                        </p>
-                        <div className="mt-6 flex flex-wrap gap-3">
-                            {['Desarrollo Web', 'Backend', 'Frontend', 'APIs', 'Bases de Datos'].map((tag, idx) => (
-                                <span key={idx} className="px-3 py-1 bg-gradient-to-r from-orange-500/20 to-red-500/20 border border-orange-500/30 text-orange-300 text-sm rounded-full backdrop-blur-sm">
-                                    {tag}
-                                </span>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            {/* Skills Section */}
-            <section id="habilidades" className="py-20 px-4 sm:px-6 lg:px-8">
-                <div className="max-w-6xl mx-auto">
-                    <h3 className="text-4xl font-bold bg-gradient-to-r from-orange-400 to-red-400 bg-clip-text text-transparent text-center mb-12">
-                        {t.skills.title}
-                    </h3>
-                    <div className="grid md:grid-cols-3 gap-8">
-                        {skillsData.map((category, idx) => (
-                            <div key={idx} className="group bg-gradient-to-br from-slate-800/50 to-slate-700/50 backdrop-blur-sm rounded-2xl p-6 border border-orange-500/20 shadow-xl shadow-orange-500/10 hover:shadow-orange-500/20 transition-all duration-300 hover:scale-105">
-                                <h4 className="text-xl font-semibold bg-gradient-to-r from-orange-400 to-red-400 bg-clip-text text-transparent mb-6 text-center">
-                                    {category.category}
-                                </h4>
-                                <div className="space-y-6">
-                                    {category.items.map((skill, skillIdx) => (
-                                        <div key={skillIdx} className="group/skill">
-                                            <div className="flex justify-between items-center mb-3">
-                                                <span className="text-gray-300 font-medium group-hover/skill:text-white transition-colors">
-                                                    {skill.name}
-                                                </span>
-                                                <span className="text-orange-300 text-sm font-semibold">
-                                                    {skill.level}%
-                                                </span>
-                                            </div>
-                                            <div className="w-full bg-slate-700/50 rounded-full h-3 overflow-hidden shadow-inner">
-                                                <div
-                                                    className={`h-3 rounded-full ${skill.color} transition-all duration-1000 ease-out shadow-lg transform origin-left group-hover/skill:scale-x-105`}
-                                                    style={{ width: `${skill.level}%` }}
-                                                ></div>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </section>
-
-            {/* Services Section */}
-            <section id="servicios" className="py-20 px-4 sm:px-6 lg:px-8 bg-black/20 backdrop-blur-sm">
-                <div className="max-w-6xl mx-auto">
-                    <h3 className="text-4xl font-bold bg-gradient-to-r from-orange-400 to-red-400 bg-clip-text text-transparent text-center mb-12">
-                        {t.services.title}
-                    </h3>
-                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {services.map((service, idx) => (
-                            <div key={idx} className={`group relative bg-gradient-to-br from-slate-800/50 to-slate-700/50 backdrop-blur-sm rounded-2xl p-6 border border-orange-500/20 shadow-xl ${service.shadowColor} hover:shadow-2xl transition-all duration-500 hover:scale-105 hover:rotate-1 cursor-pointer overflow-hidden`}>
-                                {/* Background gradient overlay */}
-                                <div className={`absolute inset-0 bg-gradient-to-r ${service.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-300 rounded-2xl`}></div>
-                                
-                                {/* Icon with gradient background */}
-                                <div className={`relative z-10 w-16 h-16 bg-gradient-to-r ${service.gradient} rounded-xl flex items-center justify-center mb-4 text-white shadow-lg ${service.shadowColor} group-hover:scale-110 transition-transform duration-300`}>
-                                    {service.icon}
-                                </div>
-                                
-                                {/* Content */}
-                                <div className="relative z-10">
-                                    <p className="text-gray-300 leading-relaxed group-hover:text-white transition-colors duration-300">
-                                        {service.title}
-                                    </p>
-                                </div>
-
-                                {/* Hover effect border */}
-                                <div className={`absolute inset-0 border-2 border-transparent bg-gradient-to-r ${service.gradient} rounded-2xl opacity-0 group-hover:opacity-20 transition-opacity duration-300 -m-0.5`}></div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </section>
-
-            {/* Contact Section */}
-            <section id="contacto" className="py-20 px-4 sm:px-6 lg:px-8">
-                <div className="max-w-5xl mx-auto">
-                    <div className="text-center mb-12">
-                        <h3 className="text-4xl font-bold bg-gradient-to-r from-orange-400 to-red-400 bg-clip-text text-transparent mb-4">
-                            {t.contact.title}
-                        </h3>
-                        <p className="text-xl text-orange-300">{t.contact.subtitle}</p>
-                    </div>
-
-                    <div className="grid md:grid-cols-2 gap-12">
-                        {/* Contact Form */}
-                        <div className="bg-gradient-to-br from-slate-800/50 to-slate-700/50 backdrop-blur-sm rounded-2xl p-8 border border-orange-500/20 shadow-xl shadow-orange-500/10">
-                            <form onSubmit={handleSubmit} className="space-y-6">
-                                <div className="group">
-                                    <input
-                                        type="text"
-                                        name="name"
-                                        value={formData.name}
-                                        onChange={handleInputChange}
-                                        placeholder={t.contact.name}
-                                        required
-                                        className="w-full px-4 py-4 bg-slate-800/50 border border-orange-500/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-400/20 transition-all duration-300 group-hover:border-orange-500/40"
-                                    />
-                                </div>
-                                <div className="group">
-                                    <input
-                                        type="email"
-                                        name="email"
-                                        value={formData.email}
-                                        onChange={handleInputChange}
-                                        placeholder={t.contact.email}
-                                        required
-                                        className="w-full px-4 py-4 bg-slate-800/50 border border-orange-500/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-400/20 transition-all duration-300 group-hover:border-orange-500/40"
-                                    />
-                                </div>
-                                <div className="group">
-                                    <textarea
-                                        name="message"
-                                        value={formData.message}
-                                        onChange={handleInputChange}
-                                        rows={6}
-                                        placeholder={t.contact.message}
-                                        required
-                                        className="w-full px-4 py-4 bg-slate-800/50 border border-orange-500/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-400/20 resize-none transition-all duration-300 group-hover:border-orange-500/40"
-                                    ></textarea>
-                                </div>
-                                
-                                {submitStatus === 'success' && (
-                                    <div className="p-4 bg-green-500/10 border border-green-500/20 rounded-xl text-green-300 text-sm">
-                                        ¡Perfecto! Se abrirá tu cliente de email para enviar el mensaje.
-                                    </div>
-                                )}
-                                
-                                {submitStatus === 'error' && (
-                                    <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-300 text-sm">
-                                        Hubo un problema. Por favor, contacta directamente a xavier.gutierrez1606@gmail.com
-                                    </div>
-                                )}
-                                
-                                <button 
-                                    type="submit"
-                                    disabled={isSubmitting}
-                                    className="group w-full px-6 py-4 bg-gradient-to-r from-orange-500 to-red-500 text-white font-semibold rounded-xl hover:from-orange-600 hover:to-red-600 transition-all duration-300 transform hover:scale-105 shadow-lg shadow-orange-500/25 flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
-                                >
-                                    <span>{isSubmitting ? 'Enviando...' : t.contact.send}</span>
-                                    {!isSubmitting && <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />}
-                                </button>
-                            </form>
-                        </div>
-
-                        {/* Contact Info */}
-                        <div className="space-y-6">
-                            <div className="bg-gradient-to-br from-slate-800/50 to-slate-700/50 backdrop-blur-sm rounded-2xl p-6 border border-orange-500/20 shadow-xl shadow-orange-500/10">
-                                <h4 className="text-2xl font-semibold bg-gradient-to-r from-orange-400 to-red-400 bg-clip-text text-transparent mb-6">
-                                    Enlaces profesionales
-                                </h4>
-                                <div className="space-y-4">
-                                    <a 
-                                        href="https://share.google/bWqbxn6FT45ktsKPs" 
-                                        target="_blank" 
-                                        rel="noopener noreferrer" 
-                                        className="group flex items-center space-x-4 text-gray-300 hover:text-white transition-all duration-300 p-3 rounded-xl hover:bg-slate-700/30"
-                                    >
-                                        <div className="w-12 h-12 bg-gradient-to-r from-slate-600 to-slate-800 rounded-xl flex items-center justify-center group-hover:from-slate-500 group-hover:to-slate-700 transition-all duration-300 shadow-lg">
-                                            <Github size={24} />
-                                        </div>
-                                        <div>
-                                            <span className="font-medium">GitHub</span>
-                                            <p className="text-sm text-gray-400">Proyectos y código</p>
-                                        </div>
-                                        <ArrowRight size={16} className="ml-auto group-hover:translate-x-1 transition-transform opacity-0 group-hover:opacity-100" />
-                                    </a>
-
-                                    <a 
-                                        href="https://www.linkedin.com/in/angel-guti%C3%A9rrez-b65922202?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" 
-                                        target="_blank" 
-                                        rel="noopener noreferrer" 
-                                        className="group flex items-center space-x-4 text-gray-300 hover:text-white transition-all duration-300 p-3 rounded-xl hover:bg-slate-700/30"
-                                    >
-                                        <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-blue-800 rounded-xl flex items-center justify-center group-hover:from-blue-500 group-hover:to-blue-700 transition-all duration-300 shadow-lg shadow-blue-500/25">
-                                            <Linkedin size={24} />
-                                        </div>
-                                        <div>
-                                            <span className="font-medium">LinkedIn</span>
-                                            <p className="text-sm text-gray-400">Perfil profesional</p>
-                                        </div>
-                                        <ArrowRight size={16} className="ml-auto group-hover:translate-x-1 transition-transform opacity-0 group-hover:opacity-100" />
-                                    </a>
-
-                                    <a 
-                                        href="https://wa.me/50764086483" 
-                                        target="_blank" 
-                                        rel="noopener noreferrer" 
-                                        className="group flex items-center space-x-4 text-gray-300 hover:text-white transition-all duration-300 p-3 rounded-xl hover:bg-slate-700/30"
-                                    >
-                                        <div className="w-12 h-12 bg-gradient-to-r from-green-600 to-green-800 rounded-xl flex items-center justify-center group-hover:from-green-500 group-hover:to-green-700 transition-all duration-300 shadow-lg shadow-green-500/25">
-                                            <Phone size={24} />
-                                        </div>
-                                        <div>
-                                            <span className="font-medium">WhatsApp</span>
-                                            <p className="text-sm text-gray-400">+507 6408-6483</p>
-                                        </div>
-                                        <ArrowRight size={16} className="ml-auto group-hover:translate-x-1 transition-transform opacity-0 group-hover:opacity-100" />
-                                    </a>
-
-                                    <a 
-                                        href="mailto:xavier.gutierrez1606@gmail.com" 
-                                        className="group flex items-center space-x-4 text-gray-300 hover:text-white transition-all duration-300 p-3 rounded-xl hover:bg-slate-700/30"
-                                    >
-                                        <div className="w-12 h-12 bg-gradient-to-r from-red-600 to-red-800 rounded-xl flex items-center justify-center group-hover:from-red-500 group-hover:to-red-700 transition-all duration-300 shadow-lg shadow-red-500/25">
-                                            <Mail size={24} />
-                                        </div>
-                                        <div>
-                                            <span className="font-medium">Email</span>
-                                            <p className="text-sm text-gray-400">xavier.gutierrez1606@gmail.com</p>
-                                        </div>
-                                        <ArrowRight size={16} className="ml-auto group-hover:translate-x-1 transition-transform opacity-0 group-hover:opacity-100" />
-                                    </a>
-                                </div>
-                            </div>
-
-                            {/* Stats or additional info */}
-                            <div className="bg-gradient-to-br from-slate-800/50 to-slate-700/50 backdrop-blur-sm rounded-2xl p-6 border border-orange-500/20 shadow-xl shadow-orange-500/10">
-                                <h5 className="text-lg font-semibold text-white mb-4">¿Por qué elegirme?</h5>
-                                <div className="space-y-3">
-                                    <div className="flex items-center space-x-3">
-                                        <div className="w-2 h-2 bg-gradient-to-r from-orange-400 to-red-400 rounded-full"></div>
-                                        <span className="text-gray-300 text-sm">Respuesta rápida en menos de 24h</span>
-                                    </div>
-                                    <div className="flex items-center space-x-3">
-                                        <div className="w-2 h-2 bg-gradient-to-r from-orange-400 to-red-400 rounded-full"></div>
-                                        <span className="text-gray-300 text-sm">Código limpio y documentado</span>
-                                    </div>
-                                    <div className="flex items-center space-x-3">
-                                        <div className="w-2 h-2 bg-gradient-to-r from-orange-400 to-red-400 rounded-full"></div>
-                                        <span className="text-gray-300 text-sm">Soporte técnico post-entrega</span>
-                                    </div>
-                                    <div className="flex items-center space-x-3">
-                                        <div className="w-2 h-2 bg-gradient-to-r from-orange-400 to-red-400 rounded-full"></div>
-                                        <span className="text-gray-300 text-sm">Metodologías ágiles</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            {/* Footer */}
-            <footer className="py-12 px-4 sm:px-6 lg:px-8 border-t border-orange-500/20 bg-black/20">
-                <div className="max-w-7xl mx-auto">
-                    <div className="flex flex-col md:flex-row justify-between items-center space-y-6 md:space-y-0">
-                        <div className="flex items-center space-x-3">
-                            <div className="w-10 h-10 bg-gradient-to-r from-orange-500 to-red-500 rounded-lg flex items-center justify-center">
-                                <span className="text-white font-bold">AG</span>
-                            </div>
-                            <div>
-                                <p className="text-gray-400 text-sm">{t.footer.rights}</p>
-                                <p className="text-gray-500 text-xs">Panamá • Disponible para proyectos</p>
-                            </div>
-                        </div>
-                        
-                        <div className="flex items-center space-x-4">
-                            <button 
-                                onClick={downloadCV}
-                                className="group px-6 py-3 bg-gradient-to-r from-orange-500/20 to-red-500/20 border border-orange-400/30 text-orange-300 rounded-xl hover:from-orange-500/30 hover:to-red-500/30 hover:border-orange-400 transition-all duration-300 flex items-center space-x-2 backdrop-blur-sm"
-                            >
-                                <Download size={16} className="group-hover:animate-bounce" />
-                                <span className="text-sm font-medium">{t.hero.cta2}</span>
-                            </button>
-                            
-                            <button 
-                                onClick={() => scrollToSection('inicio')}
-                                className="p-3 bg-slate-800/50 border border-orange-500/20 text-orange-300 rounded-xl hover:bg-slate-700/50 hover:border-orange-400 transition-all duration-300 backdrop-blur-sm group"
-                            >
-                                <ArrowRight size={16} className="rotate-[-90deg] group-hover:translate-y-[-2px] transition-transform" />
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </footer>
-
-            {/* Custom CSS for animation delays */}
-            <style jsx>{`
-                .animation-delay-2000 {
-                    animation-delay: 2s;
-                }
-                .animation-delay-4000 {
-                    animation-delay: 4s;
-                }
-            `}</style>
+          {isMenuOpen && (
+            <div className="md:hidden py-4 border-t border-cyan-500/10">
+              <nav className="flex flex-col space-y-3">
+                {t.nav.map(item => (
+                  <button key={item.key} onClick={() => scrollTo(item.key)}
+                    className={`text-left text-sm font-medium transition-colors ${activeSection === item.key ? 'text-cyan-400' : 'text-gray-300'}`}>
+                    {item.label}
+                  </button>
+                ))}
+                <button onClick={() => setLanguage(language === 'ES' ? 'EN' : 'ES')}
+                  className="text-left px-3 py-1.5 text-xs border border-cyan-500/30 text-cyan-400 rounded-lg w-fit">
+                  {language === 'ES' ? 'EN' : 'ES'}
+                </button>
+              </nav>
+            </div>
+          )}
         </div>
-    );
+      </header>
+
+      {/* ── Hero ── */}
+      <section id="inicio" className="pt-28 sm:pt-36 pb-16 sm:pb-20 px-4 sm:px-6 lg:px-8 relative">
+        <div className="max-w-4xl mx-auto text-center">
+          <div className="inline-flex items-center px-4 py-2 bg-cyan-500/10 border border-cyan-500/20 rounded-full mb-8 backdrop-blur-sm">
+            <span className="w-2 h-2 bg-cyan-400 rounded-full mr-2 animate-pulse" />
+            <span className="text-cyan-300 text-sm font-medium">{t.hero.badge}</span>
+          </div>
+
+          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold mb-4 leading-tight">{t.hero.name}</h1>
+
+          <div className="text-xl sm:text-2xl font-light text-gray-300 mb-6 h-9">
+            <span className="text-gray-400">{t.hero.prefix}</span>
+            <span className="text-cyan-400 font-medium">{currentText}<span className="animate-pulse ml-0.5">|</span></span>
+          </div>
+
+          <p className="text-base sm:text-lg text-gray-400 max-w-2xl mx-auto leading-relaxed mb-10">{t.hero.description}</p>
+
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
+            <button onClick={downloadCV}
+              className="group px-7 py-3.5 bg-gradient-to-r from-cyan-500 to-teal-500 font-semibold rounded-xl hover:from-cyan-600 hover:to-teal-600 transition-all duration-300 flex items-center space-x-2 shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/40 hover:scale-105">
+              <Download size={18} className="group-hover:animate-bounce" />
+              <span>{t.hero.downloadCV}</span>
+            </button>
+            <button onClick={() => scrollTo('contacto')}
+              className="px-7 py-3.5 border border-gray-600 text-gray-300 font-semibold rounded-xl hover:border-cyan-400/50 hover:text-white hover:bg-cyan-500/5 transition-all duration-300">
+              {t.hero.contact}
+            </button>
+          </div>
+
+          <div className="grid grid-cols-3 gap-4 sm:gap-8 max-w-xl mx-auto">
+            {t.stats.map((s, i) => (
+              <div key={i} className="text-center">
+                <div className="text-2xl sm:text-3xl font-bold text-cyan-400 mb-1">{s.value}</div>
+                <div className="text-xs sm:text-sm text-gray-500">{s.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Proyectos ── */}
+      <section id="proyectos" className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-12">
+            <span className="text-cyan-400 text-sm font-semibold tracking-widest uppercase">{t.projects.subtitle}</span>
+            <h2 className="text-3xl sm:text-4xl font-bold mt-2">
+              {t.projects.title}{' '}
+              <span className="italic bg-gradient-to-r from-cyan-400 to-teal-400 bg-clip-text text-transparent">{t.projects.highlight}</span>
+            </h2>
+            <p className="text-gray-400 mt-3">{t.projects.desc}</p>
+          </div>
+
+          {/* Nexo Card */}
+          <div className="group bg-[#111827] rounded-2xl border border-gray-800 overflow-hidden hover:border-cyan-500/30 transition-all duration-500 hover:shadow-2xl hover:shadow-cyan-500/10">
+            <div className="relative h-48 sm:h-64 lg:h-80 overflow-hidden bg-gradient-to-br from-emerald-900/20 via-[#111827] to-teal-900/10">
+              <Image src="/projects/nexo-preview.png" alt="Nexo - Finanzas Inteligentes" fill
+                className="object-cover object-top opacity-90 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700"
+                sizes="(max-width: 768px) 100vw, 900px" loading="lazy" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#111827] via-transparent to-transparent" />
+            </div>
+            <div className="p-6 sm:p-8">
+              <div className="flex flex-wrap gap-2 mb-4">
+                {nexoTechnologies.map(tech => (
+                  <span key={tech.name} className={`px-3 py-1 text-xs font-medium rounded-full ${tech.color}`}>{tech.name}</span>
+                ))}
+              </div>
+              <h3 className="text-xl sm:text-2xl font-bold mb-3">Nexo — Finanzas Inteligentes</h3>
+              <p className="text-gray-400 leading-relaxed mb-6 text-sm sm:text-base">{t.nexoDesc}</p>
+              <a href="https://nexo-finanzas.vercel.app" target="_blank" rel="noopener noreferrer"
+                className="inline-flex items-center space-x-2 text-cyan-400 hover:text-cyan-300 font-medium transition-colors group/link">
+                <span>{t.viewProject}</span>
+                <ExternalLink size={16} className="group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5 transition-transform" />
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Stack Técnico ── */}
+      <section id="habilidades" className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-10">
+            <span className="text-cyan-400 text-sm font-semibold tracking-widest uppercase">{t.skills.subtitle}</span>
+            <h2 className="text-3xl sm:text-4xl font-bold mt-2">
+              {t.skills.title}{' '}
+              <span className="italic bg-gradient-to-r from-yellow-400 to-amber-400 bg-clip-text text-transparent">{t.skills.highlight}</span>
+            </h2>
+            <p className="text-gray-400 mt-3">{t.skills.desc}</p>
+          </div>
+
+          <div className="flex flex-wrap justify-center gap-3 mb-10">
+            {filterCategories.map(cat => (
+              <button key={cat.key} onClick={() => setActiveFilter(cat.key)}
+                className={`px-5 py-2 text-sm font-medium rounded-lg border transition-all duration-300 ${
+                  activeFilter === cat.key
+                    ? 'bg-white text-gray-900 border-white shadow-lg'
+                    : 'text-gray-300 border-gray-700 hover:border-gray-500 hover:text-white'
+                }`}>
+                {cat.label}
+              </button>
+            ))}
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5">
+            {filteredTech.map(tech => {
+              const Icon = tech.icon;
+              return (
+                <div key={tech.name}
+                  className="group bg-[#111827] rounded-xl border border-gray-800 p-5 sm:p-6 flex flex-col items-center text-center hover:border-gray-600 hover:bg-[#1a2332] transition-all duration-300 hover:scale-[1.03]">
+                  <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl bg-gray-800/80 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                    <Icon size={28} style={{ color: tech.color }} />
+                  </div>
+                  <span className="text-gray-300 text-sm font-medium mb-3 group-hover:text-white transition-colors">{tech.name}</span>
+                  <div className="flex space-x-1.5">
+                    {[1, 2, 3, 4, 5].map(dot => (
+                      <span key={dot} className="w-2 h-2 rounded-full transition-all duration-300"
+                        style={{ backgroundColor: dot <= tech.level ? tech.color : '#374151', opacity: dot <= tech.level ? 1 : 0.4 }} />
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Contacto ── */}
+      <section id="contacto" className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-3xl mx-auto">
+          <div className="relative bg-[#111827] rounded-2xl border border-gray-800 p-8 sm:p-12 text-center overflow-hidden">
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-cyan-500 via-teal-500 to-blue-500" />
+            <span className="text-cyan-400 text-sm font-semibold tracking-widest uppercase">{t.contact.subtitle}</span>
+            <h2 className="text-2xl sm:text-3xl font-bold mt-3 mb-4">{t.contact.title}</h2>
+            <p className="text-gray-400 mb-10 max-w-lg mx-auto">{t.contact.desc}</p>
+
+            <div className="flex flex-wrap justify-center gap-3 sm:gap-4">
+              {socialLinks.map(link => {
+                const SocialIcon = link.icon;
+                return (
+                  <a key={link.name} href={link.href}
+                    target={link.name !== 'Email' ? '_blank' : undefined}
+                    rel={link.name !== 'Email' ? 'noopener noreferrer' : undefined}
+                    className={`inline-flex items-center space-x-2 px-5 py-3 border border-gray-700 rounded-xl text-gray-300 transition-all duration-300 ${link.hoverBg} hover:text-white group`}>
+                    <SocialIcon size={18} style={{ color: link.color }} className="group-hover:scale-110 transition-transform" />
+                    <span className="text-sm font-medium">{link.name}</span>
+                  </a>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Footer ── */}
+      <footer className="py-8 px-4 border-t border-gray-800/50">
+        <div className="max-w-7xl mx-auto text-center">
+          <p className="text-gray-500 text-sm">{t.footer}</p>
+        </div>
+      </footer>
+    </div>
+  );
 };
 
 export default Portfolio;
