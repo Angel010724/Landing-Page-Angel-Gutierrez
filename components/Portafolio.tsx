@@ -6,7 +6,7 @@ import {
   SiJavascript, SiTypescript, SiPython, SiPhp,
   SiLaravel, SiReact, SiNodedotjs, SiFastapi, SiNextdotjs, SiDjango,
   SiMysql, SiPostgresql, SiMongodb,
-  SiGit, SiFigma, SiPostman, SiVercel
+  SiGit, SiFigma, SiPostman, SiVercel, SiAngular, SiTailwindcss
 } from 'react-icons/si';
 import { VscVscode } from 'react-icons/vsc';
 import { FaLinkedinIn, FaGithub, FaWhatsapp, FaEnvelope } from 'react-icons/fa';
@@ -18,20 +18,23 @@ const techStack = [
   { name: 'TypeScript', icon: SiTypescript, color: '#3178C6', level: 4, category: 'lenguajes' },
   { name: 'Python', icon: SiPython, color: '#3776AB', level: 4, category: 'lenguajes' },
   { name: 'PHP', icon: SiPhp, color: '#777BB4', level: 3, category: 'lenguajes' },
-  { name: 'Laravel', icon: SiLaravel, color: '#FF2D20', level: 4, category: 'frameworks' },
-  { name: 'React', icon: SiReact, color: '#61DAFB', level: 5, category: 'frameworks' },
+  { name: 'Laravel', icon: SiLaravel, color: '#FF2D20', level: 3, category: 'frameworks' },
+  { name: 'React', icon: SiReact, color: '#61DAFB', level: 4, category: 'frameworks' },
   { name: 'FastAPI', icon: SiFastapi, color: '#009688', level: 4, category: 'frameworks' },
-  { name: 'Next.js', icon: SiNextdotjs, color: '#ffffff', level: 5, category: 'frameworks' },
-  { name: 'Django', icon: SiDjango, color: '#092E20', level: 4, category: 'frameworks' },
+  { name: 'Next.js', icon: SiNextdotjs, color: '#ffffff', level: 4, category: 'frameworks' },
+  { name: 'Django', icon: SiDjango, color: '#092E20', level: 3, category: 'frameworks' },
   { name: 'Node.js', icon: SiNodedotjs, color: '#339933', level: 4, category: 'frameworks' },
+  { name: 'Angular', icon: SiAngular, color: '#DD0031', level: 3, category: 'frameworks' },
   { name: 'MySQL', icon: SiMysql, color: '#4479A1', level: 4, category: 'bases' },
   { name: 'PostgreSQL', icon: SiPostgresql, color: '#4169E1', level: 4, category: 'bases' },
   { name: 'MongoDB', icon: SiMongodb, color: '#47A248', level: 3, category: 'bases' },
-  { name: 'Git', icon: SiGit, color: '#F05032', level: 5, category: 'herramientas' },
+  { name: 'Git', icon: SiGit, color: '#F05032', level: 4, category: 'herramientas' },
   { name: 'VS Code', icon: VscVscode, color: '#007ACC', level: 5, category: 'herramientas' },
   { name: 'Figma', icon: SiFigma, color: '#F24E1E', level: 3, category: 'herramientas' },
   { name: 'Postman', icon: SiPostman, color: '#FF6C37', level: 4, category: 'herramientas' },
   { name: 'Vercel', icon: SiVercel, color: '#ffffff', level: 4, category: 'herramientas' },
+  { name: 'GitHub', icon: FaGithub, color: '#ffffff', level: 4, category: 'herramientas' },
+  { name: 'Tailwind', icon: SiTailwindcss, color: '#38B2AC', level: 4, category: 'herramientas' },
 ];
 
 const filterCategories = [
@@ -127,8 +130,9 @@ const Portfolio = () => {
   const t = content[language];
 
   const typingWords = useMemo(() => language === 'ES'
-    ? ['Desarrollador Fullstack', 'Licenciado en Software', 'Diseñador Web']
-    : ['Fullstack Developer', 'Software Graduate', 'Web Designer'], [language]);
+    ? ['Desarrollador Fullstack', 'Diseñador de Interfaces', 'Desarrollador Web']
+    : ['Fullstack Developer', 'UI/UX Designer', 'Web Developer'],
+    [language]);
 
   useEffect(() => {
     const word = typingWords[currentWordIndex];
